@@ -1,0 +1,13 @@
+.favorites-button {
+  justify-self: start;
+  padding: .8rem 1.1rem;
+  border: 1px solid #17324d;
+  border-radius: .6rem;
+  color: #fff;
+  background: #17324d;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.favorites-button:hover { background: #234b70; }
+.favorites-button:focus-visible { outline: 3px solid rgba(35, 103, 161, .25); outline-offset: 2px; }

@@ -1,0 +1,4 @@
+.search-bar { display: grid; gap: .5rem; }
+.search-bar label { color: #243447; font-size: .9rem; font-weight: 700; }
+.search-bar input { width: 100%; padding: .9rem 1rem; border: 1px solid #cbd5df; border-radius: .65rem; background: #fff; color: #17212b; font: inherit; }
+.search-bar input:focus { border-color: #2367a1; outline: 3px solid rgba(35, 103, 161, .16); }

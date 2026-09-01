@@ -1,0 +1,3 @@
+.car-image { position: relative; display: grid; height: 160px; place-items: center; overflow: hidden; border-radius: .65rem; color: #718096; background: #e7edf2; font-size: .85rem; }
+.car-image img { width: 100%; height: 100%; object-fit: cover; }
+.car-image a { position: absolute; right: .35rem; bottom: .35rem; padding: .2rem .35rem; border-radius: .25rem; color: #fff; background: rgba(0, 0, 0, .7); font-size: .65rem; text-decoration: none; }
