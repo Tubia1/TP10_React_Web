@@ -28,7 +28,7 @@ function CarImage({ make, model }) {
       {image ? (
         <>
           <img src={image.url} alt={`${make} ${model}`} loading="lazy" />
-          <a href={image.sourceUrl} target="_blank" rel="noreferrer">{image.license} · Wikimedia Commons</a>
+          <a href={image.sourceUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>{image.license} · Wikimedia Commons</a>
         </>
       ) : <span>Foto no disponible</span>}
     </div>

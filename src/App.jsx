@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import CarList from './components/CarList/CarList'
+import CarDetails from './components/CarDetails/CarDetails'
 import ErrorMessage from './components/ErrorMessage/ErrorMessage'
 import Favorites from './components/Favorites/Favorites'
 import FavoritesButton from './components/FavoritesButton/FavoritesButton'
@@ -17,6 +18,7 @@ function App() {
   const [country, setCountry] = useState('Todos')
   const [favorites, setFavorites] = useState([])
   const [showFavorites, setShowFavorites] = useState(false)
+  const [selectedCar, setSelectedCar] = useState(null)
 
   const favoriteIds = useMemo(() => new Set(favorites.map((car) => car.Model_ID)), [favorites])
 
@@ -77,21 +79,29 @@ function App() {
           onClick={() => setShowFavorites((isOpen) => !isOpen)}
         />
 
-        <section aria-labelledby="cars-title">
-          <div className="section-heading">
-            <div><p>Resultados</p><h2 id="cars-title">Autos disponibles</h2></div>
-            {!loading && !error && <span>{filteredMakes.length > 0 ? filteredCars.length : 0}</span>}
-          </div>
+        {showFavorites ? (
+          <Favorites favorites={favorites} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} />
+        ) : (
+          <section aria-labelledby="cars-title">
+            <div className="section-heading">
+              <div><p>Resultados</p><h2 id="cars-title">Autos disponibles</h2></div>
+              {!loading && !error && <span>{filteredMakes.length > 0 ? filteredCars.length : 0}</span>}
+            </div>
 
-          {loading && <LoadingMessage />}
-          {error && <ErrorMessage message={error} />}
-          {!loading && !error && <CarList cars={filteredMakes.length > 0 ? filteredCars : []} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} emptyMessage={filteredMakes.length > 0 ? undefined : 'No hay marcas argentinas disponibles en vPIC.'} />}
-        </section>
-
-        {showFavorites && (
-          <Favorites favorites={favorites} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} />
+            {loading && <LoadingMessage />}
+            {error && <ErrorMessage message={error} />}
+            {!loading && !error && <CarList cars={filteredMakes.length > 0 ? filteredCars : []} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} emptyMessage={filteredMakes.length > 0 ? undefined : 'No hay marcas argentinas disponibles en vPIC.'} />}
+          </section>
         )}
       </main>
+      {selectedCar && (
+        <CarDetails
+          car={selectedCar}
+          isFavorite={favoriteIds.has(selectedCar.Model_ID)}
+          onToggleFavorite={toggleFavorite}
+          onClose={() => setSelectedCar(null)}
+        />
+      )}
     </div>
   )
 }
