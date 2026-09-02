@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import CarList from './components/CarList/CarList'
 import CarDetails from './components/CarDetails/CarDetails'
 import ErrorMessage from './components/ErrorMessage/ErrorMessage'
 import Favorites from './components/Favorites/Favorites'
-import FavoritesButton from './components/FavoritesButton/FavoritesButton'
 import Filters from './components/Filters/Filters'
 import Header from './components/Header/Header'
 import LoadingMessage from './components/LoadingMessage/LoadingMessage'
@@ -16,9 +16,18 @@ function App() {
   const { cars, makes, selectedMakeId, setSelectedMakeId, loading, error } = useCars()
   const [search, setSearch] = useState('')
   const [country, setCountry] = useState('Todos')
-  const [favorites, setFavorites] = useState([])
-  const [showFavorites, setShowFavorites] = useState(false)
+  const [favorites, setFavorites] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('car-favorites')) || []
+    } catch {
+      return []
+    }
+  })
   const [selectedCar, setSelectedCar] = useState(null)
+
+  useEffect(() => {
+    localStorage.setItem('car-favorites', JSON.stringify(favorites))
+  }, [favorites])
 
   const favoriteIds = useMemo(() => new Set(favorites.map((car) => car.Model_ID)), [favorites])
 
@@ -64,35 +73,25 @@ function App() {
     <div className="app">
       <Header />
       <main className="app__main">
-        <SearchBar search={search} onSearchChange={setSearch} />
-        <Filters
-          countries={countries}
-          country={country}
-          makes={filteredMakes}
-          makeId={selectedMakeId}
-          onCountryChange={changeCountry}
-          onMakeChange={setSelectedMakeId}
-        />
-        <FavoritesButton
-          count={favorites.length}
-          isOpen={showFavorites}
-          onClick={() => setShowFavorites((isOpen) => !isOpen)}
-        />
-
-        {showFavorites ? (
-          <Favorites favorites={favorites} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} />
-        ) : (
-          <section aria-labelledby="cars-title">
-            <div className="section-heading">
-              <div><p>Resultados</p><h2 id="cars-title">Autos disponibles</h2></div>
-              {!loading && !error && <span>{filteredMakes.length > 0 ? filteredCars.length : 0}</span>}
-            </div>
-
-            {loading && <LoadingMessage />}
-            {error && <ErrorMessage message={error} />}
-            {!loading && !error && <CarList cars={filteredMakes.length > 0 ? filteredCars : []} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} emptyMessage={filteredMakes.length > 0 ? undefined : 'No hay marcas argentinas disponibles en vPIC.'} />}
-          </section>
-        )}
+        <Routes>
+          <Route path="/" element={(
+            <>
+              <SearchBar search={search} onSearchChange={setSearch} />
+              <Filters countries={countries} country={country} makes={filteredMakes} makeId={selectedMakeId} onCountryChange={changeCountry} onMakeChange={setSelectedMakeId} />
+              <section aria-labelledby="cars-title">
+                <div className="section-heading">
+                  <div><p>Resultados</p><h2 id="cars-title">Autos disponibles</h2></div>
+                  {!loading && !error && <span>{filteredMakes.length > 0 ? filteredCars.length : 0}</span>}
+                </div>
+                {loading && <LoadingMessage />}
+                {error && <ErrorMessage message={error} />}
+                {!loading && !error && <CarList cars={filteredMakes.length > 0 ? filteredCars : []} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} emptyMessage={filteredMakes.length > 0 ? undefined : 'No hay marcas argentinas disponibles en vPIC.'} />}
+              </section>
+            </>
+          )} />
+          <Route path="/favoritos" element={<Favorites favorites={favorites} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={setSelectedCar} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
       {selectedCar && (
         <CarDetails
